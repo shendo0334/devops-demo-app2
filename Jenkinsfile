@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        AWS_DEFAULT_REGION = 'ap-south-1'
+        AWS_DEFAULT_REGION = 'ap-south-2'
         APPLICATION_NAME = 'FlaskMicroserviceApp'
         DEPLOYMENT_GROUP = 'FlaskDG'
         S3_BUCKET = 'YOUR_BUCKET_NAME'
@@ -18,7 +18,7 @@ pipeline {
 
         stage('Upload to S3') {
             steps {
-                withAWS(credentials: 'aws-jenkins', region: 'ap-south-1') {
+                withAWS(credentials: 'aws-jenkins', region: 'ap-south-2') {
                     sh '''
                     aws s3 cp deployment.zip s3://$S3_BUCKET/deployment.zip
                     '''
@@ -28,7 +28,7 @@ pipeline {
 
         stage('Deploy to EC2') {
             steps {
-                withAWS(credentials: 'aws-jenkins', region: 'ap-south-1') {
+                withAWS(credentials: 'aws-jenkins', region: 'ap-south-2') {
                     sh '''
                     aws deploy create-deployment \
                     --application-name $APPLICATION_NAME \
