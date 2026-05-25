@@ -2,29 +2,23 @@ pipeline {
     agent any
 
     environment {
-        AWS_DEFAULT_REGION = 'ap-south-2'
-        APPLICATION_NAME = 'AV-FlaskMicroserviceApp'
-        DEPLOYMENT_GROUP = 'AV-FlaskDG'
-        S3_BUCKET = 'flask-cicd-artifacts-av'
+        AWS_DEFAULT_REGION = 'ap-south-1'
+        APPLICATION_NAME = 'FlaskMicroserviceApp'
+        DEPLOYMENT_GROUP = 'FlaskDG'
+        S3_BUCKET = 'YOUR_BUCKET_NAME'
     }
 
     stages {
 
-        stage('Clone Repository') {
-            steps {
-                git branch: 'main', url: 'https://github.com/shendo0334/devops-demo-app2.git'
-            }
-        }
-
         stage('Create Deployment Package') {
             steps {
-                sh 'zip -r deployment.zip .'
+                sh 'zip -r deployment.zip . -x "*.git*"'
             }
         }
 
         stage('Upload to S3') {
             steps {
-                withAWS(credentials: 'aws-jenkins', region: 'ap-south-2') {
+                withAWS(credentials: 'aws-jenkins', region: 'ap-south-1') {
                     sh '''
                     aws s3 cp deployment.zip s3://$S3_BUCKET/deployment.zip
                     '''
@@ -34,7 +28,7 @@ pipeline {
 
         stage('Deploy to EC2') {
             steps {
-                withAWS(credentials: 'aws-jenkins', region: 'ap-south-2') {
+                withAWS(credentials: 'aws-jenkins', region: 'ap-south-1') {
                     sh '''
                     aws deploy create-deployment \
                     --application-name $APPLICATION_NAME \
